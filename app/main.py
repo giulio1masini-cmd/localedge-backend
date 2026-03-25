@@ -13,3 +13,11 @@ def heartbeat():
         "status": "healthy",
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
+from datetime import datetime, timezone
+
+@app.get("/health/heartbeat")
+def heartbeat():
+    return {
+        "status": "healthy",
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
