@@ -1,27 +1,12 @@
-from app.orchestrator import Orchestrator
 from fastapi import FastAPI
 from datetime import datetime, timezone
-from fastapi import HTTPException
-orchestrator = Orchestrator()
+from app.firewall import validate_command
+from app.orchestrator import Orchestrator
 
-SAFE_COMMANDS = {
-    "create_website",
-    "update_website",
-    "generate_voice_agent",
-    "run_research",
-    "send_outreach",
-    "start_trial",
-    "sync_business_data"
-}
-
-def validate_command(command: str):
-    if command not in SAFE_COMMANDS:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Unsafe or unknown command: {command}"
-        )
-    return True
 app = FastAPI()
+
+# Create a global orchestrator instance
+orchestrator = Orchestrator()
 
 @app.get("/")
 def root():
@@ -33,14 +18,18 @@ def heartbeat():
         "status": "healthy",
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
+
 @app.post("/command")
 def command_router(payload: dict):
     command = payload.get("command")
 
     validate_command(command)
 
-    return {"status": "accepted", "command": command}
-from app.orchestrator import Orchestrator
+    result = orchestrator.execute(command, payload)
 
-orchestrator = Orchestrator()
+    return {
+        "status": "accepted",
+        "command": command,
+        "result": result
+    }
 
