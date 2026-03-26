@@ -1,6 +1,8 @@
+from app.orchestrator import Orchestrator
 from fastapi import FastAPI
 from datetime import datetime, timezone
 from fastapi import HTTPException
+orchestrator = Orchestrator()
 
 SAFE_COMMANDS = {
     "create_website",
@@ -38,3 +40,7 @@ def command_router(payload: dict):
     validate_command(command)
 
     return {"status": "accepted", "command": command}
+from app.orchestrator import Orchestrator
+
+orchestrator = Orchestrator()
+
